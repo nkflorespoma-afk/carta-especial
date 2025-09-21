@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>💌 Carta Mágica</title>
+<style>
+body{margin:0;font-family:cursive;background:linear-gradient(135deg,#ffdde1,#ee9ca7);display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;perspective:1200px;}
+#loading{position:absolute;font-size:28px;color:white;display:flex;flex-direction:column;align-items:center;}
+.corazon{position:absolute;color:#ff6f91;font-size:24px;animation:flotar 5s linear infinite;}
+@keyframes flotar{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(-600px) rotate(360deg);opacity:0;}}
+.pantalla{display:none;flex-direction:column;align-items:center;}
+.carta{width:300px;height:400px;background:#fff;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.3);padding:20px;position:relative;}
+.mensaje{white-space:pre-line;font-size:18px;line-height:1.4;}
+button{margin-top:10px;padding:10px 20px;border:none;border-radius:10px;background:#ff6f91;color:white;cursor:pointer;font-size:16px;}
+#panelLateral{margin-top:20px;display:flex;flex-direction:column;align-items:center;}
+#mensajesPanel{margin-top:10px;width:100%;display:flex;flex-direction:column;align-items:center;}
+.tarjeta{background:#fff3f8;border:2px solid #ff6f91;border-radius:15px;padding:10px;margin-top:10px;width:90%;box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+textarea{width:90%;height:100px;border-radius:10px;padding:10px;border:2px solid #ff6f91;margin-top:10px;}
+#confirmRead{margin-left:10px;padding:5px 10px;font-size:14px;border-radius:5px;background:#ff6f91;color:white;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="loading">Cargando... 0%</div>
+
+<div class="pantalla" id="principal">
+  <div class="carta" id="carta">
+    <p class="mensaje" id="mensaje"></p>
+  </div>
+  <button id="abrirBtn">💌 Abrir Carta</button>
+  <button id="aceptarBtn" style="display:none;">✅ Aceptar</button>
+
+  <div id="panelLateral" style="display:none;">
+    <textarea id="respuesta" placeholder="Escríbeme algo..."></textarea>
+    <button id="confirmRead">📌 Leído</button>
+    <button id="enviarBtn">Enviar mensaje 💌</button>
+    <div id="mensajesPanel"></div>
+  </div>
+</div>
+
+<script>
+let texto="Desde que llegaste a mi vida, todo tiene más sentido.\nTus risas son mi canción favorita,\ny tus abrazos mi refugio más cálido.\nCada día contigo es un capítulo hermoso. 💖";
+let i=0,mostrado="";
+const principal=document.getElementById("principal");
+const mensaje=document.getElementById("mensaje");
+const panelLateral=document.getElementById("panelLateral");
+const mensajesPanel=document.getElementById("mensajesPanel");
+const abrirBtn=document.getElementById("abrirBtn");
+const aceptarBtn=document.getElementById("aceptarBtn");
+const enviarBtn=document.getElementById("enviarBtn");
+const confirmRead=document.getElementById("confirmRead");
+const loading=document.getElementById("loading");
+
+// Corazones flotantes
+for(let c=0;c<10;c++){
+  let heart=document.createElement("div");
+  heart.className="corazon";
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.animationDuration=(3+Math.random()*5)+"s";
+  heart.style.fontSize=(20+Math.random()*20)+"px";
+  heart.innerText="💖";
+  document.body.appendChild(heart);
+}
+
+// Cargador 30 segundos
+let inicio=Date.now();
+const maxTiempo=30000;
+const intervalo=setInterval(()=>{
+  let tiempoTranscurrido=Date.now()-inicio;
+  let progreso=Math.min(100,Math.floor(tiempoTranscurrido/maxTiempo*100));
+  loading.innerText="Cargando... "+progreso+"%";
+  if(progreso>=100){
+    clearInterval(intervalo);
+    loading.style.display="none";
+    principal.style.display="flex";
+  }
+},50);
+
+abrirBtn.onclick=function(){
+  abrirBtn.style.display="none";
+  escribir();
+};
+
+function escribir(){
+  if(i<texto.length){
+    mostrado+=texto.charAt(i);
+    mensaje.innerText=mostrado;
+    setTimeout(escribir,40);
+  }else{
+    aceptarBtn.style.display="block";
+  }
+}
+
+aceptarBtn.onclick=function(){
+  aceptarBtn.style.display="none";
+  panelLateral.style.display="flex";
+};
+
+// Confirmación lectura
+let puedeEnviar=false;
+confirmRead.onclick=function(){
+  puedeEnviar=true;
+  alert("Mensaje marcado como leído ✅ Ahora puedes enviar tu mensaje.");
+};
+
+// Enviar mensaje
+enviarBtn.onclick=function(){
+  if(!puedeEnviar){ alert("Debes presionar 'Leído' antes 📌"); return; }
+  let txt=document.getElementById("respuesta").value.trim();
+  if(!txt){ alert("Escribe algo 💌"); return; }
+  let tarjeta=document.createElement("div");
+  tarjeta.className="tarjeta";
+  tarjeta.innerText=txt;
+  mensajesPanel.appendChild(tarjeta);
+  document.getElementById("respuesta").value="";
+  puedeEnviar=false;
+};
+</script>
+
+</body>
+</html>
